@@ -1,18 +1,44 @@
 package kamysh.service;
 
 import kamysh.dto.ChapterDto;
-import kamysh.utils.InvalidValueException;
+import kamysh.exceptions.EntityEntryNotFound;
+import kamysh.mapper.ChapterMapper;
+import kamysh.repository.ChapterRepository;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public interface ChapterService {
+@Service
+public class ChapterService {
 
-    List<ChapterDto> findAll();
+    private final ChapterRepository personRepository;
+    private final ChapterMapper personMapper;
 
-    ChapterDto save(ChapterDto dto) throws InvalidValueException;
+    @Autowired
+    public ChapterService(ChapterRepository personRepository) {
+        this.personRepository = personRepository;
+        this.personMapper = new ChapterMapper();
+    }
 
-    ChapterDto findById(Long id);
+    public List<ChapterDto> findAll() {
+        return this.personRepository.findAll().stream().map(personMapper::entityToDto).collect(Collectors.toList());
+    }
 
-    void delete(Long id);
+    @SneakyThrows
+    public ChapterDto save(ChapterDto dto) {
+        return personMapper.entityToDto(personRepository.save(personMapper.dtoToEntity(dto)));
+    }
 
+    @SneakyThrows
+    public ChapterDto findById(Long id) {
+        return personMapper.entityToDto(personRepository.findById(id).orElseThrow(() -> new EntityEntryNotFound(id)));
+    }
+
+    @SneakyThrows
+    public void delete(Long id) {
+        personRepository.delete(personRepository.findById(id).orElseThrow(() -> new EntityEntryNotFound(id)));
+    }
 }

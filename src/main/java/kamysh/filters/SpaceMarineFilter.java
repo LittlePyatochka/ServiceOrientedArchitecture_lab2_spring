@@ -1,12 +1,9 @@
 package kamysh.filters;
 
-import kamysh.dto.SpaceMarineDto;
 import kamysh.dto.SpaceMarineWithIdDto;
-import kamysh.entity.AstartesCategory;
+import kamysh.exceptions.InvalidValueException;
 import kamysh.repository.SpaceMarineRepository;
-import kamysh.repository.SpaceMarineRepositoryImpl;
 import kamysh.utils.*;
-import kamysh.utils.Error;
 import lombok.SneakyThrows;
 
 import javax.servlet.*;
@@ -14,7 +11,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.Date;
 
@@ -23,7 +19,7 @@ import java.util.Date;
 public class SpaceMarineFilter implements Filter {
 
     private Unmarshaller unmarshaller;
-    private final SpaceMarineRepository spaceMarineRepository = new SpaceMarineRepositoryImpl();
+    private SpaceMarineRepository spaceMarineRepository;
 
 
     @SneakyThrows

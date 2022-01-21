@@ -1,22 +1,15 @@
 package kamysh.repository;
 
-import kamysh.controller.FilterConfiguration;
 import kamysh.entity.SpaceMarine;
-import kamysh.utils.InvalidValueException;
+import org.springframework.data.repository.CrudRepository;
 
-import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
-public interface SpaceMarineRepository {
+public interface SpaceMarineRepository extends CrudRepository<SpaceMarine, Long>, SpaceMarineRepositoryCustom {
     List<SpaceMarine> findAll();
 
-    List<SpaceMarine> findAll(FilterConfiguration filterConfiguration) throws ParseException, InvalidValueException;
 
-    void save(SpaceMarine coordinates);
+    Optional<SpaceMarine> findById(Long id);
 
-    SpaceMarine findById(Long id);
-
-    SpaceMarine update(SpaceMarine newValue);
-
-    void delete(Long id);
 }

@@ -1,17 +1,13 @@
 package kamysh.repository;
 
 import kamysh.entity.Coordinates;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface CoordinatesRepository {
+public interface CoordinatesRepository extends CrudRepository<Coordinates, Long> {
     List<Coordinates> findAll();
 
-    void save(Coordinates coordinates);
-
-    Coordinates findById(Long id);
-
-    Coordinates update(Coordinates newValue);
-
-    void delete(Long id);
+    Optional<Coordinates> findById(Long id);
 }

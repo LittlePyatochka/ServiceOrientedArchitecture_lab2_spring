@@ -1,18 +1,13 @@
 package kamysh.repository;
 
 import kamysh.entity.Chapter;
-import kamysh.utils.InvalidValueException;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ChapterRepository {
+public interface ChapterRepository extends CrudRepository<Chapter, Long> {
     List<Chapter> findAll();
 
-    void save(Chapter coordinates) throws InvalidValueException;
-
-    Chapter findById(Long id);
-
-    Chapter update(Chapter newValue);
-
-    void delete(Long id);
+    Optional<Chapter> findById(Long id);
 }

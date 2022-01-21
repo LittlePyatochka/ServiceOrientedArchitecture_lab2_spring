@@ -1,5 +1,7 @@
-package kamysh.utils;
+package kamysh.exceptions;
 
+import kamysh.utils.Error;
+import kamysh.utils.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

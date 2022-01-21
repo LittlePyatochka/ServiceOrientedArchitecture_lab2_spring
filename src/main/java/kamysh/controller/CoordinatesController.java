@@ -3,83 +3,41 @@ package kamysh.controller;
 import kamysh.dto.CoordinatesDto;
 import kamysh.dto.ResultListDto;
 import kamysh.service.CoordinatesService;
-import kamysh.service.CoordinatesServiceImpl;
+
 import lombok.SneakyThrows;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.PrintWriter;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-@WebServlet("/api/coordinates/*")
-public class CoordinatesController extends HttpServlet {
+@RestController
+@RequestMapping("/api/coordinates")
+public class CoordinatesController {
 
     private final CoordinatesService coordinatesService;
-    private final JAXBContext context;
 
-    public CoordinatesController() throws JAXBException {
-        this.coordinatesService = new CoordinatesServiceImpl();
-        this.context = JAXBContext.newInstance(CoordinatesDto.class, ResultListDto.class);
+    @Autowired
+    public CoordinatesController(CoordinatesService coordinatesService) {
+        this.coordinatesService = coordinatesService;
     }
 
     @SneakyThrows
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setContentType("application/xml");
-
-        PrintWriter writer = resp.getWriter();
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        Long id = (Long) req.getAttribute("id");
-
-        if (id == null) {
-            List<CoordinatesDto> results = coordinatesService.findAll();
-            if (results.size() > 0) {
-                ResultListDto coordinates = new ResultListDto();
-                coordinates.setResults(coordinatesService.findAll());
-                marshaller.marshal(coordinates, writer);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
-        } else {
-            CoordinatesDto coordinate = coordinatesService.findById(id);
-
-            if (coordinate != null) {
-                marshaller.marshal(coordinate, writer);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
-        }
+    @GetMapping
+    public ResultListDto get() {
+        return ResultListDto.builder().results(coordinatesService.findAll()).build();
     }
 
-    @SneakyThrows
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setContentType("application/xml");
-
-        PrintWriter writer = resp.getWriter();
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        CoordinatesDto coordinate = (CoordinatesDto) req.getAttribute("coordinates");
-
-        CoordinatesDto savedValue = coordinatesService.save(coordinate);
-        resp.setStatus(HttpServletResponse.SC_CREATED);
-        marshaller.marshal(savedValue, writer);
-
+    @GetMapping("/{id}")
+    public CoordinatesDto getById(@PathVariable Long id) {
+        return coordinatesService.findById(id);
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setContentType("application/xml");
+    @PostMapping
+    public CoordinatesDto create(@RequestBody CoordinatesDto dto) {
+        return coordinatesService.save(dto);
+    }
 
-        Long id = (Long) req.getAttribute("id");
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
         coordinatesService.delete(id);
     }
 }
