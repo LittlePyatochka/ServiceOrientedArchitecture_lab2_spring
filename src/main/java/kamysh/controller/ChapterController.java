@@ -3,14 +3,13 @@ package kamysh.controller;
 import kamysh.dto.ChapterDto;
 import kamysh.dto.ResultListDto;
 import kamysh.service.ChapterService;
-
 import lombok.SneakyThrows;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/chapter")
+@RequestMapping(path = "/api/chapter", produces = MediaType.APPLICATION_XML_VALUE)
 public class ChapterController {
 
     private final ChapterService chapterService;
@@ -22,8 +21,10 @@ public class ChapterController {
 
     @SneakyThrows
     @GetMapping
-    public ResultListDto get() {
-        return ResultListDto.builder().results(chapterService.findAll()).build();
+    public ResultListDto<ChapterDto> get() {
+        ResultListDto<ChapterDto> resultListDto = new ResultListDto<>();
+        resultListDto.setResults(chapterService.findAll());
+        return resultListDto;
     }
 
     @GetMapping("/{id}")

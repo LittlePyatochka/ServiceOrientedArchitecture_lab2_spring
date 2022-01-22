@@ -1,5 +1,8 @@
 package kamysh.exceptions;
 
+import lombok.Data;
+
+@Data
 public class FilterModeNotFound extends Exception {
     String filterMode;
 

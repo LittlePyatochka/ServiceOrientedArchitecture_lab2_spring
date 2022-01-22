@@ -1,17 +1,23 @@
 package kamysh.controller;
 
-import kamysh.dto.*;
+import kamysh.dto.HealthCountDto;
+import kamysh.dto.ResultListDto;
+import kamysh.dto.SpaceMarineDto;
+import kamysh.dto.SpaceMarineWithIdDto;
 import kamysh.service.SpaceMarineService;
-
 import lombok.SneakyThrows;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @RestController
-@RequestMapping("/api/space-marine")
+@RequestMapping(
+        path = "/api/space-marine",
+        produces = MediaType.APPLICATION_XML_VALUE,
+        consumes = MediaType.APPLICATION_XML_VALUE)
 public class SpaceMarineController {
 
     private final SpaceMarineService spaceMarineService;
@@ -23,20 +29,20 @@ public class SpaceMarineController {
 
     @SneakyThrows
     @GetMapping
-    public ResultListDto get(@RequestParam(required = false) Integer count,
-                             @RequestParam(required = false) Integer page,
-                             @RequestParam(required = false) String[] order,
-                             @RequestParam(required = false) String[] filter) {
-        return ResultListDto
-                .builder()
-                .results(spaceMarineService.findAll(FilterConfiguration
+    public ResultListDto<SpaceMarineDto> get(@RequestParam(required = false) Integer count,
+                                             @RequestParam(required = false) Integer page,
+                                             @RequestParam(required = false) String[] order,
+                                             @RequestParam(required = false) String[] filter) {
+        ResultListDto<SpaceMarineDto> resultListDto = new ResultListDto<>();
+        resultListDto.setResults(spaceMarineService.findAll(
+                FilterConfiguration
                         .builder()
                         .count(count)
                         .page(page)
-                        .order(Arrays.asList(order))
-                        .filter(Arrays.asList(filter))
-                        .build()))
-                .build();
+                        .order(order == null ? Collections.emptyList() : Arrays.asList(order))
+                        .filter(filter == null ? Collections.emptyList() : Arrays.asList(filter))
+                        .build()));
+        return resultListDto;
     }
 
     @GetMapping("/heartCount/min")
@@ -62,6 +68,7 @@ public class SpaceMarineController {
 
     @PutMapping("/{id}")
     public SpaceMarineDto update(@PathVariable Long id, @RequestBody SpaceMarineWithIdDto dto) {
+        System.out.println("id = " + id);
         dto.setId(id);
         return spaceMarineService.saveOrUpdate(dto);
     }
@@ -69,5 +76,10 @@ public class SpaceMarineController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         spaceMarineService.delete(id);
+    }
+
+    @DeleteMapping("/loyal")
+    public void deleteFirstByLoyal(@RequestParam Boolean value) {
+        spaceMarineService.deleteFirstByLoyal(value);
     }
 }

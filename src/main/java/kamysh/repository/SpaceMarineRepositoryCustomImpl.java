@@ -6,7 +6,7 @@ import kamysh.entity.SpaceMarine;
 import kamysh.exceptions.FilterModeNotFound;
 import kamysh.exceptions.IncorrectFilterString;
 import kamysh.exceptions.IncorrectOrderString;
-import kamysh.utils.ErrorCode;
+import kamysh.exceptions.ErrorCode;
 import kamysh.exceptions.InvalidValueException;
 
 import javax.persistence.EntityManager;

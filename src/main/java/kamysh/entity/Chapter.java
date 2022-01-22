@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,7 @@ public class Chapter {
     private Long id;
 
     @Column(name = "NAME")
+    @NotBlank(message = "Field 'name' must not be blank")
     private String name; //Поле не может быть null, Строка не может быть пустой
 
     @Column(name = "PARENT_LEGION")

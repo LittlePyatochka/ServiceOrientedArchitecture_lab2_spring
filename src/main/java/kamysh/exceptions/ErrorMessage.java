@@ -1,4 +1,4 @@
-package kamysh.utils;
+package kamysh.exceptions;
 
 public class ErrorMessage {
     public static String INVALID_XML = "Invalid XML in request body";
@@ -23,5 +23,8 @@ public class ErrorMessage {
     public static String INVALID_PAGE_VALUE = "Parameter 'page' must be bigger than 0";
     public static String WRONG_PAGE_FORMAT = "Parameter 'page' must be integer";
     public static String WRONG_LOYAL_FILTER_FORMAT = "Field 'loyal' in filter must be boolean";
-
+    public static String PERSON_NOT_FOUND = "Person not found";
+    public static String COORDINATES_NOT_FOUND = "Coordinates not found";
+    public static String SPACE_MARINE_NOT_FOUND = "Space Marine not found";
+    public static String CHAPTER_NOT_FOUND = "Chapter not found";
 }

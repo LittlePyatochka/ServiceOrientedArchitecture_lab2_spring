@@ -118,12 +118,12 @@
                 params = params.join('&')
 
                 this.$http.get(
-                    '/lab1-servlet/api/space-marine?' + params
+                    '/api/space-marine?' + params
                 ).then(
                     (response) => {
                         console.log({xml1: convertObjectToXml({x: 1, b: [0, 1, 2]})})
                         console.log({result: parseXml(response.body), xml: convertObjectToXml(parseXml(response.body))})
-                        this.spacemarines = parseXml(response.body).resultListDto.results;
+                        this.spacemarines = parseXml(response.body).ResultListDto.results;
                     },
                     (error) => {
                         if (error.status === 403 || error.status === 0) {
@@ -133,7 +133,7 @@
             },
             deleteSpaceMarine: function (spaceMarine) {
                 this.$http.delete(
-                    '/lab1-servlet/api/space-marine/' + spaceMarine.id
+                    '/api/space-marine/' + spaceMarine.id
                 ).then(
                     (response) => {
                         this.spacemarines.splice(this.spacemarines.indexOf(spaceMarine), 1);
@@ -147,8 +147,9 @@
             addSpaceMarine: function (spaceMarine) {
                 if (spaceMarine.id) {
                     this.$http.put(
-                        '/lab1-servlet/api/space-marine',
-                        toXml({ spaceMarineWithIdDto: spaceMarine })
+                        `/api/space-marine/${spaceMarine.id}`,
+                        toXml({ SpaceMarineWithIdDto: spaceMarine }),
+                        {headers: {'Content-Type': 'application/xml; charset=UTF-8'}}
                     ).then(
                         (response) => {
                             for (let i in this.spacemarines) {
@@ -166,8 +167,9 @@
                     );
                 } else {
                     this.$http.post(
-                        '/lab1-servlet/api/space-marine',
-                        toXml({spaceMarineWithIdDto: spaceMarine})
+                        '/api/space-marine',
+                        toXml({SpaceMarineWithIdDto: spaceMarine}),
+                        {headers: {'Content-Type': 'application/xml; charset=UTF-8'}}
                     ).then(
                         (response) => {
                             this.spacemarines.push(parseXml(response.body));
@@ -186,7 +188,7 @@
 
             onDeleteLoyal: function (deleteLoyal) {
                 this.$http.delete(
-                    '/lab1-servlet/api/space-marine/loyal?value=' + deleteLoyal
+                    '/api/space-marine/loyal?value=' + deleteLoyal
                 ).then(
                     (response) => {
                         this.deleteLoyalStatus = parseXml(response.body).status;
@@ -201,11 +203,11 @@
 
             onMinHeartCount: function () {
                 this.$http.get(
-                    '/lab1-servlet/api/space-marine/heartCount/min',
+                    '/api/space-marine/heartCount/min',
                 ).then(
                     (response) => {
                         // console.log({body: response.body})
-                        this.minHeartCount = parseXml(response.body).spaceMarineDto;
+                        this.minHeartCount = parseXml(response.body).SpaceMarineDto;
                     },
                     (error) => {
                         if (error.status === 403 || error.status === 0) {
@@ -215,11 +217,11 @@
             },
 
             onCountHealth: function (countHealth) {
-                this.$http.post(
-                    '/lab1-servlet/api/space-marine/health/count?value=' + countHealth
+                this.$http.get(
+                    `/api/space-marine/health/count?value=${countHealth}`,
                 ).then(
                     (response) => {
-                        this.minHealth = parseXml(response.body).healthCountDto;
+                        this.minHealth = parseXml(response.body).HealthCountDto;
                     },
                     (error) => {
                         if (error.status === 403 || error.status === 0) {
@@ -229,7 +231,7 @@
             },
             created: function () {
                 this.$http.get(
-                    '/lab1-servlet/api/space-marine',
+                    '/api/space-marine',
                     {}
                 ).then(
                     (response) => {
@@ -242,7 +244,7 @@
                 );
 
                 this.$http.get(
-                    '/lab1-servlet/api/coordinates',
+                    '/api/coordinates',
                     {}
                 ).then(
                     (response) => {
@@ -255,7 +257,7 @@
                 );
 
                 this.$http.get(
-                    '/lab1-servlet/api/chapter',
+                    '/api/chapter',
                     {}
                 ).then(
                     (response) => {

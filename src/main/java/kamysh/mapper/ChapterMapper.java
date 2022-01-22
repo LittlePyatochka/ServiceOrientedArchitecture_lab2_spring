@@ -2,7 +2,9 @@ package kamysh.mapper;
 
 import kamysh.dto.ChapterDto;
 import kamysh.entity.Chapter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChapterMapper {
 
     public Chapter dtoToEntity(ChapterDto dto) {

@@ -2,7 +2,9 @@ package kamysh.mapper;
 
 import kamysh.dto.CoordinatesDto;
 import kamysh.entity.Coordinates;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CoordinatesMapper {
 
     public Coordinates dtoToEntity(CoordinatesDto dto) {

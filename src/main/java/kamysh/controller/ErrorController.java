@@ -1,66 +1,198 @@
 package kamysh.controller;
 
-import kamysh.exceptions.InvalidValueException;
-import kamysh.utils.*;
-import lombok.SneakyThrows;
+import kamysh.dto.ErrorDTO;
+import kamysh.dto.ValidationErrorDTO;
+import kamysh.exceptions.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
+import javax.persistence.EntityNotFoundException;
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
-public class ErrorController extends HttpServlet {
+
+@ControllerAdvice
+public class ErrorController {
+
+    private final Map<String, ErrorCode> errorsMap;
+    private final Map<String, HttpStatus> statusesMap;
 
     public ErrorController() {
+        this.errorsMap = new HashMap<>();
+        this.statusesMap = new HashMap<>();
+
+        this.statusesMap.put(EntityEntryNotFound.class.getName(), HttpStatus.NOT_FOUND);
+        this.statusesMap.put(EntityNotFoundException.class.getName(), HttpStatus.NOT_FOUND);
+        this.statusesMap.put(javax.persistence.NoResultException.class.getName(), HttpStatus.BAD_REQUEST);
+        this.statusesMap.put(NumberFormatException.class.getName(), HttpStatus.BAD_REQUEST);
+        this.statusesMap.put(HttpMediaTypeNotSupportedException.class.getName(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        this.statusesMap.put(HttpRequestMethodNotSupportedException.class.getName(), HttpStatus.METHOD_NOT_ALLOWED);
+
+        this.errorsMap.put(EntityEntryNotFound.class.getName(), ErrorCode.ENTITY_ENTRY_NOT_FOUND);
+        this.errorsMap.put(EntityNotFoundException.class.getName(), ErrorCode.ENTITY_NOT_FOUND);
+        this.errorsMap.put(javax.persistence.NoResultException.class.getName(), ErrorCode.ENTITY_ENTRY_NOT_FOUND);
+        this.errorsMap.put(NumberFormatException.class.getName(), ErrorCode.INVALID_DATA_FORMAT);
+        this.errorsMap.put(HttpMediaTypeNotSupportedException.class.getName(), ErrorCode.INVALID_MEDIA_TYPE);
+        this.errorsMap.put(HttpRequestMethodNotSupportedException.class.getName(), ErrorCode.METHOD_NOT_ALLOWED);
     }
 
-    @SneakyThrows
-    protected void handleJaxBException(HttpServletResponse resp) {
-        Utils.writeError(resp, HttpServletResponse.SC_BAD_REQUEST, ErrorCode.INVALID_XML, ErrorMessage.INVALID_XML);
+    protected Object handleConstraintViolationException(Throwable throwable) {
+        ConstraintViolationException validationError = (ConstraintViolationException) throwable;
+        Map<String, String> validationErrors = new HashMap<>();
+        validationError.getConstraintViolations().forEach(
+                c -> validationErrors.put(c.getPropertyPath().toString(), c.getMessage()));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ValidationErrorDTO.builder()
+                                .error(ErrorCode.VALIDATION_ERROR.name())
+                                .message(validationErrors)
+                                .build()
+                );
     }
 
-    @SneakyThrows
-    protected void handleInvalidValueException(HttpServletResponse resp, InvalidValueException e) {
-        Utils.writeError(resp, HttpServletResponse.SC_BAD_REQUEST, e.getErrorCode(), e.getMessage());
+    protected Object handleDefaultError(Throwable throwable, String errorName) {
+        HttpStatus statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
+        throwable.printStackTrace();
+
+        if (this.statusesMap.containsKey(errorName)) statusCode = this.statusesMap.get(errorName);
+        if (this.errorsMap.containsKey(errorName)) errorCode = this.errorsMap.get(errorName);
+        return ResponseEntity
+                .status(statusCode)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(errorCode.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
     }
 
-    @SneakyThrows
-    protected void handleMissingEntityException(HttpServletResponse resp, MissingEntityException e) {
-        Utils.writeError(resp, HttpServletResponse.SC_BAD_REQUEST, e.getErrorCode(), e.getMessage());
+    protected Object handleInvalidValueException(Throwable throwable) {
+        InvalidValueException exception = (InvalidValueException) throwable;
+
+        ErrorCode errorCode = ErrorCode.VALIDATION_ERROR;
+        if (exception.getErrorCode() != null) errorCode = exception.getErrorCode();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(errorCode.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
     }
 
-    @SneakyThrows
-    protected void handleDefaultException(HttpServletResponse resp, Throwable e) {
-        Utils.writeError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+    protected Object handleFieldNotFoundException(Throwable throwable) {
+        FieldNotFoundException exception = (FieldNotFoundException) throwable;
+        ErrorCode errorCode = ErrorCode.VALIDATION_ERROR;
+        HashMap<String, String> map = new HashMap<>();
+        map.put(exception.getField(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ValidationErrorDTO.builder()
+                                .error(errorCode.name())
+                                .message(map)
+                                .build()
+                );
     }
 
-    protected void handleError(HttpServletResponse resp, Throwable throwable) {
-        if (throwable instanceof JAXBException) handleJaxBException(resp);
-        else if (throwable instanceof InvalidValueException) handleInvalidValueException(resp, (InvalidValueException) throwable);
-        else if (throwable instanceof MissingEntityException) handleMissingEntityException(resp, (MissingEntityException) throwable);
-        else handleDefaultException(resp, throwable);
+
+    protected Object handleFilterModeNotFoundException(Throwable throwable) {
+        FilterModeNotFound exception = (FilterModeNotFound) throwable;
+        ErrorCode errorCode = ErrorCode.VALIDATION_ERROR;
+        HashMap<String, String> map = new HashMap<>();
+        map.put(exception.getFilterMode(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ValidationErrorDTO.builder()
+                                .error(errorCode.name())
+                                .message(map)
+                                .build()
+                );
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Throwable throwable = (Throwable) req.getAttribute("javax.servlet.error.exception");
-        handleError(resp, throwable);
+
+    protected Object handlePersistenceException(Throwable throwable) throws IOException {
+        return handleCauseException(throwable);
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doGet(req, resp);
+    protected Object handleCauseException(Throwable throwable)
+            throws IOException {
+        Exception causedException = (Exception) throwable;
+        if (causedException.getCause() != null) return handleException(causedException.getCause());
+        else return handleDefaultError(throwable, throwable.getClass().getName());
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doGet(req, resp);
+    protected Object handleJsonException(Throwable throwable) {
+        throwable.printStackTrace();
+        ErrorCode code = ErrorCode.INVALID_BODY_DATA_FORMAT;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(code.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
     }
 
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        this.doGet(req, resp);
+    protected Object handleDataFormatException(Throwable throwable) {
+        throwable.printStackTrace();
+        ErrorCode code = ErrorCode.INCORRECT_DATA_FORMAT;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(code.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
+    }
+
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
+    protected Object handleException(Throwable throwable) throws IOException {
+        String errorName = throwable.getClass().getName();
+        switch (errorName) {
+            case "kamysh.exceptions.InvalidValueException":
+                return handleInvalidValueException(throwable);
+            case "kamysh.exceptions.FieldNotFoundException":
+                return handleFieldNotFoundException(throwable);
+            case "kamysh.exceptions.FilterModeNotFoundException":
+                return handleFilterModeNotFoundException(throwable);
+            case "javax.validation.ConstraintViolationException":
+                return handleConstraintViolationException(throwable);
+            case "javax.persistence.PersistenceException":
+                return handlePersistenceException(throwable);
+            case "java.lang.IllegalArgumentException":
+            case "org.springframework.http.converter.HttpMessageNotReadableException":
+                return handleCauseException(throwable);
+            case "com.fasterxml.jackson.core.io.JsonEOFException":
+            case "com.fasterxml.jackson.core.JsonParseException":
+                return handleJsonException(throwable);
+            case "com.fasterxml.jackson.databind.exc.InvalidFormatException":
+                return handleDataFormatException(throwable);
+            default:
+                return handleDefaultError(throwable, errorName);
+        }
     }
 }

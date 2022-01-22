@@ -4,6 +4,7 @@ import kamysh.entity.AstartesCategory;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,11 +28,12 @@ public class SpaceMarineWithIdDto {
     private Date creationDate;
 
     @NotNull(message = "Field 'health' cannot be null")
-    @Min(value = 0, message = "health min value is 0")
+    @Min(value = 0, message = "'health' min value is 0")
     private Float health;
 
-    @Min(value = 3, message = "heartCount min value is 3")
-    @NotNull(message = "Field 'health' cannot be null")
+    @Max(value = 3, message = "'heartCount' max value is 3")
+    @Min(value = 0, message = "'heartCount' min value is 0")
+    @NotNull(message = "Field 'heartCount' cannot be null")
     private Long heartCount;
 
     private boolean loyal;

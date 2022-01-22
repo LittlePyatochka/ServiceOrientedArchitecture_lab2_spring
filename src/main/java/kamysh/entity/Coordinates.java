@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -16,9 +17,11 @@ public class Coordinates {
     private Long id;
 
     @Column(name = "X")
+    @NotNull(message = "Field 'x' must be specified in request body")
     private Long x; //Поле не может быть null
 
     @Column(name = "Y")
+    @NotNull(message = "Field 'y' must be specified in request body")
     private Integer y; //Поле не может быть null
 
     public Coordinates(Long x, Integer y) {

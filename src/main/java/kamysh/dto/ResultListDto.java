@@ -1,13 +1,12 @@
 package kamysh.dto;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.List;
 
 @Data
@@ -15,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @XmlRootElement
-public class ResultListDto {
-    private List<?> results;
-
-    public List<?> getResults() {
+public class ResultListDto<T> {
+    private List<T> results;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    public List<T> getResults() {
         return results;
     }
 }
