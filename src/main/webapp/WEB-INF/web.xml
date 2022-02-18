@@ -4,18 +4,15 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
     <display-name>Archetype Created Web Application</display-name>
-    <servlet>
-        <servlet-name>ErrorController</servlet-name>
-        <servlet-class>kamysh.controller.ErrorController</servlet-class>
-    </servlet>
+<!--    <security-constraint>-->
+<!--        <web-resource-collection>-->
+<!--            <web-resource-name>Secured</web-resource-name>-->
+<!--            <url-pattern>/*</url-pattern>-->
+<!--        </web-resource-collection>-->
 
-    <servlet-mapping>
-        <servlet-name>ErrorController</servlet-name>
-        <url-pattern>/error</url-pattern>
-    </servlet-mapping>
+<!--        <user-data-constraint>-->
+<!--            <transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
+<!--        </user-data-constraint>-->
+<!--    </security-constraint>-->
 
-    <error-page>
-        <exception-type>java.lang.Throwable</exception-type>
-        <location>/error</location>
-    </error-page>
 </web-app>

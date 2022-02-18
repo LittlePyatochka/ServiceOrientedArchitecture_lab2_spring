@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @XmlRootElement
-public class ErrorDTO {
-    String message;
-    String error;
+public class LoadStarshipDTO {
+    private Long SpaceMarineId;
+    private Long StarshipId;
 }

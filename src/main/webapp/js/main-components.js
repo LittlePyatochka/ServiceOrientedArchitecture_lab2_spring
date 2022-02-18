@@ -172,5 +172,69 @@ Vue.component(
             },
         }
     }
+);
 
+Vue.component(
+    'set-paratrooper',
+    {
+        template:
+            `
+                <h4 class="col-xs-1 text-center">Load space-marine</h4>
+                <div>
+                    <label for="paratrooper">Space marine</label>
+                    <input id="paratrooper" type="text" maxlength="8" v-model="v" name="paratrooper">
+                    <div>{{ paratrooper }}</div>
+                    <label for="starship">Starship</label>
+                    <input id="starship" type="text" maxlength="8" v-model="p" name="starship">
+                    <div>{{ starship }}</div>
+                    <button class="btn btn-success d-block" v-on:click="setparatrooper(p, v)" type="submit">Load space marine to starship</button>
+                </div>
+            `,
+
+        props: ["paratrooper", "starship"],
+        data() {
+            return {
+                v: undefined,
+                p: undefined
+            }
+        },
+        methods: {
+            setparatrooper: function (paratrooper, starship) {
+                this.$emit('set-paratrooper', { paratrooper, starship });
+            },
+        }
+    }
+);
+
+Vue.component(
+    'land-all',
+    {
+        template:
+            ` 
+                <h4 class="col-xs-1 text-center">Land all space-marine</h4>
+                <div>
+                    <label for="starship">Starship</label>
+                    <input id="starship" type="text" maxlength="8" v-model="v" name="starship">
+                    <div>{{ landStarship }}</div>
+                    <button class="btn btn-success d-block" v-on:click="lendall(v)" type="submit">land all space marines</button>
+                </div>
+            `,
+
+        props: ["landStarship"],
+        data() {
+            return {
+                v: undefined
+            }
+        },
+        watch: {
+            landall(v) {
+                this.v = v;
+            },
+        },
+        methods: {
+            landall: function (landStarship) {
+                this.$emit('land-all', landStarship);
+            },
+        }
+    }
 );

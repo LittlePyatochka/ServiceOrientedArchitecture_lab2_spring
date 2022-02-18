@@ -16,8 +16,7 @@ import java.util.Collections;
 @RestController
 @RequestMapping(
         path = "/api/space-marine",
-        produces = MediaType.APPLICATION_XML_VALUE,
-        consumes = MediaType.APPLICATION_XML_VALUE)
+        produces = MediaType.APPLICATION_XML_VALUE)
 public class SpaceMarineController {
 
     private final SpaceMarineService spaceMarineService;
