@@ -60,12 +60,14 @@ Vue.component(
             `
                 <div>
                     <h4 class="col-xs-1 text-center">Additional actions</h4>
+                    <h5 class="col-xs-1 text-center">Delete one object whose loyal field value is equal to the specified one</h5>
                     <label for="deleteLoyal">Loyal</label>
                         <label for="deleteLoyal" class="pl-5">true</label>
                         <input id="deleteLoyal" type="radio" value="true" v-model="v" name="deleteLoyal">
                         <label for="deleteLoyal" class="pl-5">false</label>
                         <input id="deleteLoyal" type="radio" value="false" v-model="v" name="deleteLoyal">
                     <button class="btn btn-danger" v-on:click="onDeleteLoyal(v)" type="submit">Delete loyal</button>
+                    <h1 class="col-xs-1 text-center"></h1>
                 </div>
             `,
 
@@ -94,6 +96,7 @@ Vue.component(
         template:
             `
                 <div>
+                    <h5 class="col-xs-1 text-center">Get any object that has a minimum heartCount value</h5>
                     <table class="table table-striped table-bordered table-hover p-3 text-center">
                         <tr>
                             <th>Id</th>
@@ -119,6 +122,7 @@ Vue.component(
                         </tr>
                     </table>
                     <button class="btn btn-success" v-on:click="onMinHeartCount()" type="submit">Get min heart count</button>
+                    <h1 class="col-xs-1 text-center"></h1>
                 </div>
             `,
 
@@ -148,10 +152,12 @@ Vue.component(
         template:
             `
                 <div>
+                    <h5 class="col-xs-1 text-center">Get the number of objects whose Health field value is less than the specified</h5>
                     <label for="countHealth">Health</label>
                     <input id="countHealth" type="text" maxlength="8" v-model="v" name="countHealth">
                     <div>{{ value.healthCount }}</div>
                     <button class="btn btn-success d-block" v-on:click="onCountHealth(v)" type="submit">Get health count</button>
+                    <h1 class="col-xs-1 text-center"></h1>
                 </div>
             `,
 
@@ -179,19 +185,31 @@ Vue.component(
     {
         template:
             `
-                <h4 class="col-xs-1 text-center">Load space-marine</h4>
                 <div>
+                    <h4 class="col-xs-1 text-center">Second lab</h4>
+                    <h5 class="col-xs-1 text-center">Load space-marine</h5>
                     <label for="paratrooper">Space marine</label>
                     <input id="paratrooper" type="text" maxlength="8" v-model="v" name="paratrooper">
                     <div>{{ paratrooper }}</div>
                     <label for="starship">Starship</label>
                     <input id="starship" type="text" maxlength="8" v-model="p" name="starship">
                     <div>{{ starship }}</div>
-                    <button class="btn btn-success d-block" v-on:click="setparatrooper(p, v)" type="submit">Load space marine to starship</button>
+                    <button class="btn btn-success d-block" v-on:click="setparatrooper(v, p)" type="submit">Load space marine to starship</button>
+
+                    <table class="table table-striped table-bordered table-hover p-3 text-center">
+                        <tr>
+                            <th>Starship name</th>
+                            <th>Quantity on board</th>
+                        </tr>
+                        <tr>
+                            <td>{{ totalOnBoard.name }}</td>
+                            <td>{{ totalOnBoard.totalParatroopers }}</td>
+                        </tr>
+                    </table>
                 </div>
             `,
 
-        props: ["paratrooper", "starship"],
+        props: ["paratrooper", "starship", "totalOnBoard"],
         data() {
             return {
                 v: undefined,
@@ -211,29 +229,34 @@ Vue.component(
     {
         template:
             ` 
-                <h4 class="col-xs-1 text-center">Land all space-marine</h4>
                 <div>
-                    <label for="starship">Starship</label>
-                    <input id="starship" type="text" maxlength="8" v-model="v" name="starship">
+                <h5 class="col-xs-1 text-center">Land all space-marine</h5>
+                    <label for="landStarship">Starship</label>
+                    <input id="landStarship" type="text" maxlength="8" v-model="l" name="landStarship">
                     <div>{{ landStarship }}</div>
-                    <button class="btn btn-success d-block" v-on:click="lendall(v)" type="submit">land all space marines</button>
+                    <button class="btn btn-success d-block" v-on:click="landall(l)" type="submit">land all space marines</button>
+                    <table class="table table-striped table-bordered table-hover p-3 text-center">
+                        <tr>
+                            <th>Starship name</th>
+                            <th>Quantity on board</th>
+                        </tr>
+                        <tr>
+                            <td>{{ checkLand.name }}</td>
+                            <td>{{ checkLand.totalParatroopers }}</td>
+                        </tr>
+                    </table>
                 </div>
             `,
 
-        props: ["landStarship"],
+        props: ["landStarship", "checkLand"],
         data() {
             return {
-                v: undefined
+                l: undefined
             }
-        },
-        watch: {
-            landall(v) {
-                this.v = v;
-            },
         },
         methods: {
             landall: function (landStarship) {
-                this.$emit('land-all', landStarship);
+                this.$emit('land-all', { landStarship });
             },
         }
     }

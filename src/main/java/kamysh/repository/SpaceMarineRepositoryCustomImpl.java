@@ -30,6 +30,8 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
         CriteriaQuery<SpaceMarine> criteria = criteriaBuilder.createQuery(SpaceMarine.class);
         Root<SpaceMarine> root = criteria.from(SpaceMarine.class);
         List<Order> orders = new ArrayList<>();
+        System.err.println("SIZE = " + filterConfiguration.toString());
+
 
         filterConfiguration.getOrder().forEach(order -> {
             String[] parts = order.split(",", 2);
@@ -37,6 +39,8 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
             String fieldName = parts[0];
             if (!EXPECTED_FIELDS.contains(fieldName)) throw new RuntimeException(new FilterModeNotFound(fieldName));
             String orderKey = parts[1];
+            System.err.println("orderKey = " + orderKey);
+
             if (orderKey.equals("d")) orders.add(criteriaBuilder.desc(root.get(fieldName)));
             else if (orderKey.equals("a")) orders.add(criteriaBuilder.asc(root.get(fieldName)));
             else throw new RuntimeException(new IncorrectOrderString());

@@ -42,17 +42,17 @@ Vue.component(
                 <div>
                     <label for="category">Category</label>
                     
-                    <label for="filterByСategoryAGGRESSOR" class="pl-5">AGGRESSOR</label>
-                    <input id="filterByСategoryAGGRESSOR" type="radio" value="AGGRESSOR" v-model="category" name="category">
-                    <label for="filterByСategoryLIBRARIAN" class="pl-5">LIBRARIAN</label>
-                    <input id="filterByСategoryLIBRARIAN" type="radio" value="LIBRARIAN" v-model="category" name="category">
-                    <label for="filterByСategoryHELIX" class="pl-5">HELIX</label>
-                    <input id="filterByСategoryHELIX" type="radio" value="HELIX" v-model="category" name="category">
-                    <label for="filterByСategoryAPOTHECARY" class="pl-5">APOTHECARY</label>
-                    <input id="filterByСategoryAPOTHECARY" type="radio" value="APOTHECARY" v-model="category" name="category">
+                    <label for="filterByCategoryAGGRESSOR" class="pl-5">AGGRESSOR</label>
+                    <input id="filterByCategoryAGGRESSOR" type="radio" value="AGGRESSOR" v-model="category" name="category">
+                    <label for="filterByCategoryLIBRARIAN" class="pl-5">LIBRARIAN</label>
+                    <input id="filterByCategoryLIBRARIAN" type="radio" value="LIBRARIAN" v-model="category" name="category">
+                    <label for="filterByCategoryHELIX" class="pl-5">HELIX</label>
+                    <input id="filterByCategoryHELIX" type="radio" value="HELIX" v-model="category" name="category">
+                    <label for="filterByCategoryAPOTHECARY" class="pl-5">APOTHECARY</label>
+                    <input id="filterByCategoryAPOTHECARY" type="radio" value="APOTHECARY" v-model="category" name="category">
                 </div>
                 <div>
-                    <label for="chapter">Сhapter</label>
+                    <label for="chapter">Chapter</label>
                     <input id="chapter" type="text" maxlength="8" v-model="chapter">
                 </div>
                 

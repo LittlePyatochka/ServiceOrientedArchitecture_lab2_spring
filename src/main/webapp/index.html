@@ -6,7 +6,7 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>СОА #2</title>
+    <title>SOA #2</title>
 
     <link rel="stylesheet" type="text/css" href="css/thirdparty/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/thirdparty/bootstrap-table.min.css">
@@ -22,8 +22,8 @@
     <delete-loyal v-on:delete-loyal="onDeleteLoyal" v-bind:delete-loyal="deleteLoyal"></delete-loyal>
     <min-heart-count v-on:min-heart-count="onMinHeartCount" v-bind:min-heart-count="minHeartCount"></min-heart-count>
     <count-health v-on:count-health="onCountHealth" :value="minHealth"></count-health>
-    <set-paratrooper v-on:set-paratrooper="setparatrooper" v-bind:paratrooper="paratrooper" v-bind:starship="starship"></set-paratrooper>
-    <land-all v-on:land-all="landall"  v-bind:landStarship="landStarship"></land-all>
+    <set-paratrooper v-on:set-paratrooper="setparatrooper" v-bind:paratrooper="paratrooper" v-bind:starship="starship" v-bind:total-on-board="totalOnBoard"></set-paratrooper>
+    <land-all v-on:land-all="landall"  v-bind:landStarship="landStarship" v-bind:check-land="checkLand"></land-all>
 </div>
 
 <script src="js/main-components.js"></script>
@@ -31,6 +31,7 @@
 <script src="js/addmarine.js"></script>
 <script src="js/parser.js"></script>
 <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script>
     var app = new Vue({
@@ -46,9 +47,13 @@
             minHealth: "-",
             paratrooper: undefined,
             starship: undefined,
-            countonboard: "-",
             landStarship: undefined,
-
+            totalOnBoard: {},
+            checkLand: {},
+            clientHost: "https://localhost:8181/service-oriented-architecture-actions-jaxrs-api/",
+            host: "https://localhost:8454/lab2-spring/",
+            // host: "http://localhost:8090/lab2-spring/",
+            // clientHost: "http://localhost:8080/service-oriented-architecture-actions-jaxrs-api/",
         },
         methods: {
             filter: function (filterInfo) {
@@ -126,7 +131,7 @@
                 params = params.join('&')
 
                 this.$http.get(
-                    'api/space-marine?' + params
+                    this.host + 'api/space-marine?' + params
                 ).then(
                     (response) => {
                         console.log({xml1: convertObjectToXml({x: 1, b: [0, 1, 2]})})
@@ -141,7 +146,7 @@
             },
             deleteSpaceMarine: function (spaceMarine) {
                 this.$http.delete(
-                    'api/space-marine/' + spaceMarine.id
+                    this.host + 'api/space-marine/' + spaceMarine.id
                 ).then(
                     (response) => {
                         this.spacemarines.splice(this.spacemarines.indexOf(spaceMarine), 1);
@@ -155,7 +160,7 @@
             addSpaceMarine: function (spaceMarine) {
                 if (spaceMarine.id) {
                     this.$http.put(
-                        `api/space-marine/${spaceMarine.id}`,
+                        this.host + `api/space-marine/${spaceMarine.id}`,
                         toXml({ SpaceMarineWithIdDto: spaceMarine }),
                         {headers: {'Content-Type': 'application/xml; charset=UTF-8'}}
                     ).then(
@@ -175,7 +180,7 @@
                     );
                 } else {
                     this.$http.post(
-                        'api/space-marine',
+                        this.host +  'api/space-marine',
                         toXml({SpaceMarineWithIdDto: spaceMarine}),
                         {headers: {'Content-Type': 'application/xml; charset=UTF-8'}}
                     ).then(
@@ -196,7 +201,7 @@
 
             onDeleteLoyal: function (deleteLoyal) {
                 this.$http.delete(
-                    'api/space-marine/loyal?value=' + deleteLoyal
+                    this.host + 'api/space-marine/loyal?value=' + deleteLoyal
                 ).then(
                     (response) => {
                         this.deleteLoyalStatus = parseXml(response.body).status;
@@ -211,7 +216,7 @@
 
             onMinHeartCount: function () {
                 this.$http.get(
-                    'api/space-marine/heartCount/min',
+                    this.host +  'api/space-marine/heartCount/min',
                 ).then(
                     (response) => {
                         // console.log({body: response.body})
@@ -226,7 +231,7 @@
 
             onCountHealth: function (countHealth) {
                 this.$http.get(
-                    `api/space-marine/health/count?value=${countHealth}`,
+                    this.host +  `api/space-marine/health/count?value=${countHealth}`,
                 ).then(
                     (response) => {
                         this.minHealth = parseXml(response.body).HealthCountDto;
@@ -237,35 +242,58 @@
                     }
                 );
             },
-            setparatrooper: function ({ starship, paratrooper }) {
-                this.$http.post(
-                    `https://localhost:8181/service-oriented-architecture-actions-jaxrs-api/api/starship/${starship}/load/${paratrooper}`,
-                ).then(
+            setparatrooper: function ({ paratrooper, starship }) {
+                axios.post(this.clientHost + `api/starship/${starship}/load/${paratrooper}`)
+                    .then(
                     (response) => {
-                        this.countonboard = parseXml(response.body).LoadStarshipDTO;
+                        this.totalOnBoard = parseXml(response.data).starshipDTO;
                     },
                     (error) => {
-                        if (error.status === 403 || error.status === 0) {
-                        }
+                        // i
                     }
                 );
+                // this.$http.post("https://localhost:8181/service-oriented-architecture-actions-jaxrs-api/api/starship/1/load/1")
+                // this.$http.post(
+                //     this.clientHost + `api/starship/${starship}/load/${paratrooper}`,
+                //     // this.clientHost + "api/starship/2/load/2"
+                // ).then(
+                //     (response) => {
+                //         this.totalOnBoard = parseXml(response.body).starshipDTO;
+                //     },
+                //     (error) => {
+                //         if (error.status === 403 || error.status === 0) {
+                //         }
+                //     }
+                // );
             },
-            landall: function (landStarship) {
-                this.$http.delete(
-                    `https://localhost:8181/service-oriented-architecture-actions-jaxrs-api/api/starship/${landStarship}/unload-all`,
-                ).then(
-                    (response) => {
-                        this.countonboard = parseXml(response.body).LoadStarshipDTO;
-                    },
-                    (error) => {
-                        if (error.status === 403 || error.status === 0) {
+            landall: function ({ landStarship }) {
+                axios.delete(this.clientHost + `api/starship/${landStarship}/unload-all`)
+                    .then(
+                        (response) => {
+                            console.log(response.data)
+                            this.checkLand = parseXml(response.body).starshipDTO;
+                        },
+                        () => {
+                            // i
                         }
-                    }
-                );
+                    );
+
+                // this.$http.delete(
+                //     this.clientHost + `api/starship/${landStarship}/unload-all`,
+                // ).then(
+                //     (response) => {
+                //         console.log(response.body)
+                //         this.checkLand = parseXml(response.body).starshipDTO;
+                //     },
+                //     (error) => {
+                //         if (error.status === 403 || error.status === 0) {
+                //         }
+                //     }
+                // );
             },
             created: function () {
                 this.$http.get(
-                    'api/space-marine',
+                    this.host +  'api/space-marine',
                     {}
                 ).then(
                     (response) => {
@@ -278,7 +306,7 @@
                 );
 
                 this.$http.get(
-                    'api/coordinates',
+                    this.host +  'api/coordinates',
                     {}
                 ).then(
                     (response) => {
@@ -291,7 +319,7 @@
                 );
 
                 this.$http.get(
-                    'api/chapter',
+                    this.host +  'api/chapter',
                     {}
                 ).then(
                     (response) => {

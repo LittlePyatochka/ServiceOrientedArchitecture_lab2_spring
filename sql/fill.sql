@@ -17,8 +17,8 @@ VALUES (0, 0),
        (900, 900);
 
 INSERT INTO SPACE_MARINE (NAME, COORDINATES, CREATION_DATE, HEALTH, HEART_COUNT, LOYAL, CATEGORY, CHAPTER)
-VALUES ('Heighliner', 5, '2003-01-01', 4, 4, true , 'APOTHECARY', 1),
-       ('Arcadia', 1, '2003-01-01', 11, 5, true, 'HELIX', 2),
-       ('Black Hawk', 1, '2003-01-01', 11, 5, true, 'LIBRARIAN', 3),
-       ('Charlotte', 1, '2021-01-01', 11, 5, true, 'LIBRARIAN', 4),
-       ('Shark', 6, '2004-01-01', 3, 3, true, 'AGGRESSOR', 1);
+VALUES ('Heighliner', 7, '2003-01-01', 4, 3, true , 'APOTHECARY', 12),
+       ('Arcadia', 8, '2003-01-01', 11, 2, true, 'HELIX', 12),
+       ('Black Hawk', 8, '2003-01-01', 11, 2, true, 'LIBRARIAN', 13),
+       ('Charlotte', 9, '2021-01-01', 11, 1, true, 'LIBRARIAN', 14),
+       ('Shark', 9, '2004-01-01', 3, 3, true, 'AGGRESSOR', 12);

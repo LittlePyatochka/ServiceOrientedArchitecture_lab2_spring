@@ -7,7 +7,9 @@ import kamysh.dto.SpaceMarineWithIdDto;
 import kamysh.service.SpaceMarineService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -21,6 +23,14 @@ public class SpaceMarineController {
 
     private final SpaceMarineService spaceMarineService;
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(
+                String[].class,
+                new StringArrayPropertyEditor(null));
+    }
+
+
     @Autowired
     public SpaceMarineController(SpaceMarineService spaceMarineService) {
         this.spaceMarineService = spaceMarineService;
@@ -33,6 +43,7 @@ public class SpaceMarineController {
                                              @RequestParam(required = false) String[] order,
                                              @RequestParam(required = false) String[] filter) {
         ResultListDto<SpaceMarineDto> resultListDto = new ResultListDto<>();
+        System.err.println("ORDER = " + Arrays.toString(order));
         resultListDto.setResults(spaceMarineService.findAll(
                 FilterConfiguration
                         .builder()
