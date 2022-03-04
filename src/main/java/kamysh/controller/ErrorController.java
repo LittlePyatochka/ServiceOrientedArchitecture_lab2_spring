@@ -168,6 +168,48 @@ public class ErrorController {
                 );
     }
 
+    protected Object handleInvalidFilterModeFormatException(Throwable throwable) {
+        throwable.printStackTrace();
+        ErrorCode code = ErrorCode.INVALID_FILTER_FORMAT;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(code.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
+    }
+
+    protected Object handleIncorrectOrderStringException(Throwable throwable) {
+        throwable.printStackTrace();
+        ErrorCode code = ErrorCode.INCORRECT_ORDER_DATA_FORMAT;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(code.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
+    }
+
+    protected Object handleIncorrectFilterStringException(Throwable throwable) {
+        throwable.printStackTrace();
+        ErrorCode code = ErrorCode.INCORRECT_FILTER_DATA_FORMAT;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_XML)
+                .body(
+                        ErrorDTO.builder()
+                                .error(code.name())
+                                .message(throwable.getMessage())
+                                .build()
+                );
+    }
+
     @ResponseBody
     @ExceptionHandler(Exception.class)
     protected Object handleException(Throwable throwable) throws IOException {
@@ -186,13 +228,19 @@ public class ErrorController {
             case "java.lang.IllegalArgumentException":
             case "org.springframework.http.converter.HttpMessageNotReadableException":
                 return handleCauseException(throwable);
+            case "kamysh.exceptions.IncorrectOrderString":
+                return handleIncorrectOrderStringException(throwable);
+            case "kamysh.exceptions.IncorrectFilterString":
+                return handleIncorrectFilterStringException(throwable);
             case "com.fasterxml.jackson.core.io.JsonEOFException":
             case "com.fasterxml.jackson.core.JsonParseException":
                 return handleJsonException(throwable);
             case "com.fasterxml.jackson.databind.exc.InvalidFormatException":
                 return handleDataFormatException(throwable);
+            case "kamysh.exceptions.FilterModeNotFound":
+                return handleInvalidFilterModeFormatException(throwable);
             default:
-                return handleDefaultError(throwable, errorName);
+                return handleCauseException(throwable);
         }
     }
 }

@@ -40,10 +40,13 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
             if (!EXPECTED_FIELDS.contains(fieldName)) throw new RuntimeException(new FilterModeNotFound(fieldName));
             String orderKey = parts[1];
             System.err.println("orderKey = " + orderKey);
-
+            if (!orderKey.equals("d") && !orderKey.equals("a")){
+                throw new RuntimeException(new IncorrectOrderString(orderKey));
+            }
             if (orderKey.equals("d")) orders.add(criteriaBuilder.desc(root.get(fieldName)));
-            else if (orderKey.equals("a")) orders.add(criteriaBuilder.asc(root.get(fieldName)));
-            else throw new RuntimeException(new IncorrectOrderString());
+            else {
+                orders.add(criteriaBuilder.asc(root.get(fieldName)));
+            }
         });
         if (orders.size() > 0) criteria.orderBy(orders);
 
@@ -62,7 +65,7 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
                         try {
                             predicates.add(criteriaBuilder.equal(root.<Date>get(fieldName), formatter.parse(value)));
                         } catch (ParseException e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException(new IncorrectFilterString());
                         }
                     } else if (fieldName.equals("coordinates") || fieldName.equals("chapter")) {
                         if (fieldName.equals("chapter") && value.equals("None")) {
@@ -71,9 +74,13 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
                             predicates.add(criteriaBuilder.equal(root.get(fieldName).get("id"), value));
                         }
                     } else if (fieldName.equals("category")) {
+
                         predicates.add(criteriaBuilder.equal(root.get(fieldName), AstartesCategory.valueOf(value)));
                     } else if (fieldName.equals("loyal")) {
-                        predicates.add(criteriaBuilder.equal(root.get(fieldName), Boolean.valueOf(value)));
+                        if (!Boolean.parseBoolean(value)){
+                            throw new RuntimeException(new IncorrectFilterString());
+                        }
+                            predicates.add(criteriaBuilder.equal(root.get(fieldName), Boolean.valueOf(value)));
                     } else if (fieldName.equals("heartCount") || fieldName.equals("health") || fieldName.equals("id")) {
                         predicates.add(criteriaBuilder.equal(root.get(fieldName), Integer.valueOf(value)));
                     } else {

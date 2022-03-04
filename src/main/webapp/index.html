@@ -267,13 +267,13 @@
                 // );
             },
             landall: function ({ landStarship }) {
-                axios.delete(this.clientHost + `api/starship/${landStarship}/unload-all`)
+                axios.post(this.clientHost + `api/starship/${landStarship}/unload-all`)
                     .then(
                         (response) => {
                             console.log(response.data)
-                            this.checkLand = parseXml(response.body).starshipDTO;
+                            this.checkLand = parseXml(response.data).starshipDTO;
                         },
-                        () => {
+                        (error) => {
                             // i
                         }
                     );
