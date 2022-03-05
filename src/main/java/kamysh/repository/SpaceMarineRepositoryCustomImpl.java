@@ -77,7 +77,7 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
 
                         predicates.add(criteriaBuilder.equal(root.get(fieldName), AstartesCategory.valueOf(value)));
                     } else if (fieldName.equals("loyal")) {
-                        if (!Boolean.parseBoolean(value)){
+                        if (!isBoolean(value)){
                             throw new RuntimeException(new IncorrectFilterString());
                         }
                             predicates.add(criteriaBuilder.equal(root.get(fieldName), Boolean.valueOf(value)));
@@ -107,5 +107,10 @@ public class SpaceMarineRepositoryCustomImpl implements SpaceMarineRepositoryCus
         });
 
         return query.getResultList();
+    }
+
+
+    private boolean isBoolean(String value){
+        return value.equals(Boolean.FALSE.toString()) || value.equals(Boolean.TRUE.toString());
     }
 }

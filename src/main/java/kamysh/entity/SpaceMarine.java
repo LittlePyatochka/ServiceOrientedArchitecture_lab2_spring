@@ -28,7 +28,7 @@ public class SpaceMarine {
     @NotBlank(message = "Field 'name' cannot be blank")
     private String name; //Поле не может быть null, Строка не может быть пустой
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "COORDINATES")
     @NotNull(message = "Field 'coordinates' cannot be null")
     private Coordinates coordinates; //Поле не может быть null
@@ -56,7 +56,7 @@ public class SpaceMarine {
     @NotNull(message = "Field 'category' cannot be null")
     private AstartesCategory category; //Поле не может быть null
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CHAPTER")
     @NotNull(message = "Field 'chapter' cannot be null")
     private Chapter chapter; //Поле не может быть null

@@ -236,6 +236,8 @@ public class ErrorController {
             case "com.fasterxml.jackson.core.JsonParseException":
                 return handleJsonException(throwable);
             case "com.fasterxml.jackson.databind.exc.InvalidFormatException":
+            case "com.ctc.wstx.exc.WstxParsingException":
+            case "java.io.IOException":
                 return handleDataFormatException(throwable);
             case "kamysh.exceptions.FilterModeNotFound":
                 return handleInvalidFilterModeFormatException(throwable);
