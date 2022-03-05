@@ -156,6 +156,7 @@
                         }
                     }
                 );
+                axios.post(this.clientHost + `api/starship/${spaceMarine.id}`)
             },
             addSpaceMarine: function (spaceMarine) {
                 if (spaceMarine.id) {
